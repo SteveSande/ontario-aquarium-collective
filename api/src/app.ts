@@ -10,6 +10,10 @@ import { sqlite } from './sqlite'
 import { authentication } from './authentication'
 import { services } from './services/index'
 
+if (!process.env.FEATHERS_SECRET) {
+  throw new Error('FEATHERS_SECRET environment variable is required')
+}
+
 const app: Application = koa(feathers())
 
 // Load our app configuration (see config/ folder)

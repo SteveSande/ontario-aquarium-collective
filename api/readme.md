@@ -18,6 +18,8 @@ This project uses [Feathers](http://feathersjs.com). An open source framework fo
 
 3. Start your app
 
+    Set `FEATHERS_SECRET` to a unique secret in the environment before starting the API. Startup fails when it is missing or empty.
+
     ```
     npm run compile # Compile TypeScript source
     npm run migrate # Run migrations to set up the database
