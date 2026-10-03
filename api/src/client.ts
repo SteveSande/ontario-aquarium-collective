@@ -4,6 +4,14 @@ import type { TransportConnection, Application } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
 
+import { postImagesClient } from './services/post-images/post-images.shared'
+export type {
+  PostImages,
+  PostImagesData,
+  PostImagesQuery,
+  PostImagesPatch
+} from './services/post-images/post-images.shared'
+
 import { postsClient } from './services/posts/posts.shared'
 export type { Posts, PostsData, PostsQuery, PostsPatch } from './services/posts/posts.shared'
 
@@ -38,5 +46,6 @@ export const createClient = <Configuration = any,>(
 
   client.configure(userClient)
   client.configure(postsClient)
+  client.configure(postImagesClient)
   return client
 }
