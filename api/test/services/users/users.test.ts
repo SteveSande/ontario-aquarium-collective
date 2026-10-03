@@ -8,4 +8,13 @@ describe('users service', () => {
 
     assert.ok(service, 'Registered the service')
   })
+
+  it('rejects roles outside admin and user', async () => {
+    await assert.rejects(
+      app.get('sqliteClient')('users').insert({
+        email: 'invalid-role@example.com',
+        system_role: 'owner'
+      })
+    )
+  })
 })

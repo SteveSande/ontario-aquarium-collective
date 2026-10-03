@@ -42,6 +42,7 @@ describe('application client tests', () => {
     assert.ok(accessToken, 'Created access token for user')
     assert.ok(user, 'Includes user in authentication data')
     assert.strictEqual(user.password, undefined, 'Password is hidden to clients')
+    assert.strictEqual(user.system_role, 'user', 'New users have the user role')
 
     await client.logout()
 

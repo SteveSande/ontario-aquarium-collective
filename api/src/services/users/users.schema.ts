@@ -13,7 +13,8 @@ export const userSchema = Type.Object(
   {
     id: Type.Number(),
     email: Type.String(),
-    password: Type.Optional(Type.String())
+    password: Type.Optional(Type.String()),
+    system_role: Type.Union([Type.Literal('admin'), Type.Literal('user')])
   },
   { $id: 'User', additionalProperties: false }
 )
@@ -37,7 +38,7 @@ export const userDataResolver = resolve<UserData, HookContext<UserService>>({
 })
 
 // Schema for updating existing entries
-export const userPatchSchema = Type.Partial(userSchema, {
+export const userPatchSchema = Type.Partial(Type.Omit(userSchema, ['system_role']), {
   $id: 'UserPatch'
 })
 export type UserPatch = Static<typeof userPatchSchema>
