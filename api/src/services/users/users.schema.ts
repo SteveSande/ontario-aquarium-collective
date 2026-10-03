@@ -38,7 +38,7 @@ export const userDataResolver = resolve<UserData, HookContext<UserService>>({
 })
 
 // Schema for updating existing entries
-export const userPatchSchema = Type.Partial(Type.Omit(userSchema, ['system_role']), {
+export const userPatchSchema = Type.Partial(Type.Omit(userSchema, ['id']), {
   $id: 'UserPatch'
 })
 export type UserPatch = Static<typeof userPatchSchema>
