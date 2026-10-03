@@ -38,6 +38,11 @@ describe('application client tests', () => {
     const createdUser = await app.service('users').create(userData)
 
     await assert.rejects(client.service('users').create({ email: 'anonymous@example.com' }), { code: 401 })
+    const publicUser = await client.service('users').get(createdUser.id)
+    assert.strictEqual(publicUser.email, userData.email)
+    assert.strictEqual(publicUser.password, undefined)
+    const publicUsers = await client.service('users').find({ query: { id: createdUser.id } })
+    assert.strictEqual(publicUsers.total, 1)
 
     const { user, accessToken } = await client.authenticate({
       strategy: 'local',
