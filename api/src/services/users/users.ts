@@ -15,6 +15,7 @@ import {
 } from './users.schema'
 
 import type { Application } from '../../declarations'
+import { requireAdmin } from '../../hooks/require-admin'
 import { UserService, getOptions } from './users.class'
 import { userPath, userMethods } from './users.shared'
 
@@ -36,7 +37,7 @@ export const user = (app: Application) => {
       all: [schemaHooks.resolveExternal(userExternalResolver), schemaHooks.resolveResult(userResolver)],
       find: [authenticate('jwt')],
       get: [authenticate('jwt')],
-      create: [],
+      create: [authenticate('jwt')],
       update: [authenticate('jwt')],
       patch: [authenticate('jwt')],
       remove: [authenticate('jwt')]
@@ -45,9 +46,9 @@ export const user = (app: Application) => {
       all: [schemaHooks.validateQuery(userQueryValidator), schemaHooks.resolveQuery(userQueryResolver)],
       find: [],
       get: [],
-      create: [schemaHooks.validateData(userDataValidator), schemaHooks.resolveData(userDataResolver)],
-      patch: [schemaHooks.validateData(userPatchValidator), schemaHooks.resolveData(userPatchResolver)],
-      remove: []
+      create: [requireAdmin, schemaHooks.validateData(userDataValidator), schemaHooks.resolveData(userDataResolver)],
+      patch: [requireAdmin, schemaHooks.validateData(userPatchValidator), schemaHooks.resolveData(userPatchResolver)],
+      remove: [requireAdmin]
     },
     after: {
       all: []
