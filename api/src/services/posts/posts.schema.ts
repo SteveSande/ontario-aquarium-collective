@@ -12,6 +12,9 @@ export const postsSchema = Type.Object(
   {
     id: Type.Number(),
     text: Type.String(),
+    description: Type.String(),
+    price: Type.Number({ minimum: 0 }),
+    location: Type.String({ minLength: 1, maxLength: 20, pattern: '\\S' }),
     owner_id: Type.Number()
   },
   { $id: 'Posts', additionalProperties: false }
@@ -25,7 +28,7 @@ export const postsExternalResolver = resolve<Posts, HookContext<PostsService>>({
 // Schema for creating new entries
 export const postsDataSchema = Type.Object(
   {
-    ...Type.Pick(postsSchema, ['text']).properties,
+    ...Type.Pick(postsSchema, ['text', 'description', 'price', 'location']).properties,
     ...Type.Partial(Type.Pick(postsSchema, ['owner_id'])).properties
   },
   { $id: 'PostsData', additionalProperties: false }
@@ -37,7 +40,7 @@ export const postsDataResolver = resolve<PostsData, HookContext<PostsService>>({
 })
 
 // Schema for updating existing entries
-export const postsPatchSchema = Type.Partial(Type.Pick(postsSchema, ['text']), {
+export const postsPatchSchema = Type.Partial(Type.Pick(postsSchema, ['text', 'description', 'price', 'location']), {
   $id: 'PostsPatch'
 })
 export type PostsPatch = Static<typeof postsPatchSchema>
@@ -45,7 +48,7 @@ export const postsPatchValidator = getValidator(postsPatchSchema, dataValidator)
 export const postsPatchResolver = resolve<PostsPatch, HookContext<PostsService>>({})
 
 // Schema for allowed query properties
-export const postsQueryProperties = Type.Pick(postsSchema, ['id', 'text', 'owner_id'])
+export const postsQueryProperties = Type.Pick(postsSchema, ['id', 'text', 'description', 'price', 'location', 'owner_id'])
 export const postsQuerySchema = Type.Intersect(
   [
     querySyntax(postsQueryProperties),
