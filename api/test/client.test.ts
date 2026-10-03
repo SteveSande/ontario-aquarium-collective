@@ -72,4 +72,46 @@ describe('application client tests', () => {
     await app.service('users').remove(createdUser.id)
     await app.service('users').remove(admin.id)
   })
+
+  it('allows public post reads and limits writes to owners or admins', async () => {
+    const suffix = `${Date.now()}-${Math.random().toString(36).slice(2)}`
+    const password = 'supersecret'
+    const ownerData = { email: `owner-${suffix}@example.com`, password }
+    const otherData = { email: `other-${suffix}@example.com`, password }
+    const adminData = { email: `post-admin-${suffix}@example.com`, password }
+    const owner = await app.service('users').create(ownerData)
+    const other = await app.service('users').create(otherData)
+    const admin = await app.service('users').create(adminData)
+    await app.get('sqliteClient')('users').where({ id: admin.id }).update({ system_role: 'admin' })
+
+    const ownerClient = createClient(rest(appUrl).axios(axios))
+    const otherClient = createClient(rest(appUrl).axios(axios))
+    const adminClient = createClient(rest(appUrl).axios(axios))
+    await ownerClient.authenticate({ strategy: 'local', ...ownerData })
+    await otherClient.authenticate({ strategy: 'local', ...otherData })
+    await adminClient.authenticate({ strategy: 'local', ...adminData })
+
+    await assert.rejects(client.service('posts').create({ text: 'anonymous' }), { code: 401 })
+    const post = await ownerClient.service('posts').create({ text: 'public post', owner_id: other.id })
+    assert.strictEqual(post.owner_id, owner.id, 'The signed-in user owns the post')
+    assert.strictEqual((await client.service('posts').get(post.id)).text, 'public post')
+    assert.strictEqual((await client.service('posts').find({ query: { id: post.id } })).total, 1)
+
+    await assert.rejects(client.service('posts').patch(post.id, { text: 'anonymous edit' }), { code: 401 })
+    await assert.rejects(client.service('posts').remove(post.id), { code: 401 })
+    await assert.rejects(otherClient.service('posts').patch(post.id, { text: 'changed' }), { code: 404 })
+    await assert.rejects(otherClient.service('posts').remove(post.id), { code: 404 })
+    await assert.rejects(otherClient.service('posts').patch(post.id, { text: 'changed' }, { query: { owner_id: owner.id } }), { code: 404 })
+    await assert.rejects(ownerClient.service('posts').patch(post.id, { owner_id: other.id } as any), { code: 400 })
+    assert.strictEqual((await ownerClient.service('posts').patch(post.id, { text: 'owner edit' })).text, 'owner edit')
+    assert.strictEqual((await adminClient.service('posts').patch(post.id, { text: 'admin edit' })).text, 'admin edit')
+    await adminClient.service('posts').remove(post.id)
+    const ownedPost = await ownerClient.service('posts').create({ text: 'owner removable' })
+    assert.strictEqual(ownedPost.owner_id, owner.id)
+    await ownerClient.service('posts').remove(ownedPost.id)
+
+    await app.service('users').remove(owner.id)
+    await app.service('users').remove(other.id)
+    await app.service('users').remove(admin.id)
+  })
 })
