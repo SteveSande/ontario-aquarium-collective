@@ -91,9 +91,11 @@ describe('application client tests', () => {
     await otherClient.authenticate({ strategy: 'local', ...otherData })
     await adminClient.authenticate({ strategy: 'local', ...adminData })
 
-    await assert.rejects(client.service('posts').create({ text: 'anonymous' }), { code: 401 })
-    const post = await ownerClient.service('posts').create({ text: 'public post', owner_id: other.id })
+    await assert.rejects(client.service('posts').create({ text: 'anonymous' } as any), { code: 401 })
+    const postData = { text: 'public post', description: 'Healthy aquarium plants', price: 12.5, location: 'Centretown, Ottawa' }
+    const post = await ownerClient.service('posts').create({ ...postData, owner_id: other.id })
     assert.strictEqual(post.owner_id, owner.id, 'The signed-in user owns the post')
+    assert.strictEqual(post.location, 'Centretown, Ottawa')
     assert.strictEqual((await client.service('posts').get(post.id)).text, 'public post')
     assert.strictEqual((await client.service('posts').find({ query: { id: post.id } })).total, 1)
 
@@ -103,10 +105,16 @@ describe('application client tests', () => {
     await assert.rejects(otherClient.service('posts').remove(post.id), { code: 404 })
     await assert.rejects(otherClient.service('posts').patch(post.id, { text: 'changed' }, { query: { owner_id: owner.id } }), { code: 404 })
     await assert.rejects(ownerClient.service('posts').patch(post.id, { owner_id: other.id } as any), { code: 400 })
+    await assert.rejects(ownerClient.service('posts').patch(post.id, { location: '   ' }), { code: 400 })
+    await assert.rejects(ownerClient.service('posts').create({ ...postData, location: '' }), { code: 400 })
+    await assert.rejects(ownerClient.service('posts').create({ ...postData, location: 'x'.repeat(21) }), { code: 400 })
+    await assert.rejects(ownerClient.service('posts').create({ text: postData.text, description: postData.description, price: postData.price } as any), { code: 400 })
     assert.strictEqual((await ownerClient.service('posts').patch(post.id, { text: 'owner edit' })).text, 'owner edit')
+    assert.strictEqual((await ownerClient.service('posts').patch(post.id, { location: 'M5V 2T6' })).location, 'M5V 2T6')
+    assert.strictEqual((await ownerClient.service('posts').patch(post.id, { location: 'Toronto' })).location, 'Toronto')
     assert.strictEqual((await adminClient.service('posts').patch(post.id, { text: 'admin edit' })).text, 'admin edit')
     await adminClient.service('posts').remove(post.id)
-    const ownedPost = await ownerClient.service('posts').create({ text: 'owner removable' })
+    const ownedPost = await ownerClient.service('posts').create({ ...postData, text: 'owner removable' })
     assert.strictEqual(ownedPost.owner_id, owner.id)
     await ownerClient.service('posts').remove(ownedPost.id)
 
