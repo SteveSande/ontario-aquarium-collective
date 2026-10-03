@@ -11,7 +11,8 @@ import type { PostsService } from './posts.class'
 export const postsSchema = Type.Object(
   {
     id: Type.Number(),
-    text: Type.String()
+    text: Type.String(),
+    owner_id: Type.Number()
   },
   { $id: 'Posts', additionalProperties: false }
 )
@@ -22,15 +23,21 @@ export const postsResolver = resolve<PostsQuery, HookContext<PostsService>>({})
 export const postsExternalResolver = resolve<Posts, HookContext<PostsService>>({})
 
 // Schema for creating new entries
-export const postsDataSchema = Type.Pick(postsSchema, ['text'], {
-  $id: 'PostsData'
-})
+export const postsDataSchema = Type.Object(
+  {
+    ...Type.Pick(postsSchema, ['text']).properties,
+    ...Type.Partial(Type.Pick(postsSchema, ['owner_id'])).properties
+  },
+  { $id: 'PostsData', additionalProperties: false }
+)
 export type PostsData = Static<typeof postsDataSchema>
 export const postsDataValidator = getValidator(postsDataSchema, dataValidator)
-export const postsDataResolver = resolve<PostsData, HookContext<PostsService>>({})
+export const postsDataResolver = resolve<PostsData, HookContext<PostsService>>({
+  owner_id: async (value, post, context) => context.params.user?.id ?? value
+})
 
 // Schema for updating existing entries
-export const postsPatchSchema = Type.Partial(postsSchema, {
+export const postsPatchSchema = Type.Partial(Type.Pick(postsSchema, ['text']), {
   $id: 'PostsPatch'
 })
 export type PostsPatch = Static<typeof postsPatchSchema>
@@ -38,7 +45,7 @@ export const postsPatchValidator = getValidator(postsPatchSchema, dataValidator)
 export const postsPatchResolver = resolve<PostsPatch, HookContext<PostsService>>({})
 
 // Schema for allowed query properties
-export const postsQueryProperties = Type.Pick(postsSchema, ['id', 'text'])
+export const postsQueryProperties = Type.Pick(postsSchema, ['id', 'text', 'owner_id'])
 export const postsQuerySchema = Type.Intersect(
   [
     querySyntax(postsQueryProperties),
@@ -49,4 +56,16 @@ export const postsQuerySchema = Type.Intersect(
 )
 export type PostsQuery = Static<typeof postsQuerySchema>
 export const postsQueryValidator = getValidator(postsQuerySchema, queryValidator)
-export const postsQueryResolver = resolve<PostsQuery, HookContext<PostsService>>({})
+export const postsQueryResolver = resolve<PostsQuery, HookContext<PostsService>>({
+  owner_id: async (value, query, context) => {
+    if (
+      context.params.provider &&
+      (context.method === 'patch' || context.method === 'remove') &&
+      context.params.user?.system_role !== 'admin'
+    ) {
+      return context.params.user?.id
+    }
+
+    return value
+  }
+})
