@@ -15,12 +15,11 @@
   },
   "feathers": {
     "language": "ts",
-    "packager": "pnpm",
+    "packager": "yarn",
     "database": "sqlite",
     "framework": "koa",
     "transports": [
-      "rest",
-      "websockets"
+      "rest"
     ],
     "schema": "typebox"
   },
@@ -44,5 +43,36 @@
     "bundle:client": "npm run compile && npm pack --pack-destination ./public",
     "migrate": "knex migrate:latest",
     "migrate:make": "knex migrate:make"
+  },
+  "dependencies": {
+    "@feathersjs/adapter-commons": "5.0.50",
+    "@feathersjs/authentication": "5.0.50",
+    "@feathersjs/authentication-client": "5.0.50",
+    "@feathersjs/authentication-local": "5.0.50",
+    "@feathersjs/configuration": "5.0.50",
+    "@feathersjs/errors": "5.0.50",
+    "@feathersjs/feathers": "5.0.50",
+    "@feathersjs/knex": "5.0.50",
+    "@feathersjs/koa": "5.0.50",
+    "@feathersjs/schema": "5.0.50",
+    "@feathersjs/transport-commons": "5.0.50",
+    "@feathersjs/typebox": "5.0.50",
+    "knex": "3.3.0",
+    "sqlite3": "6.0.1",
+    "winston": "^3.19.0"
+  },
+  "devDependencies": {
+    "@feathersjs/cli": "5.0.50",
+    "@feathersjs/rest-client": "5.0.50",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "26.0.0",
+    "axios": "1.20.0",
+    "cross-env": "^10.1.0",
+    "mocha": "12.0.1",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.9.9",
+    "shx": "0.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "5.9.3"
   }
 }
