@@ -18,7 +18,7 @@ export type PostImagesClientService = Pick<
 
 export const postImagesPath = 'post-images'
 
-export const postImagesMethods: Array<keyof PostImagesService> = ['find', 'get', 'create', 'patch', 'remove']
+export const postImagesMethods: Array<keyof PostImagesService> = ['find', 'get']
 
 export const postImagesClient = (client: ClientApplication) => {
   const connection = client.get('connection')

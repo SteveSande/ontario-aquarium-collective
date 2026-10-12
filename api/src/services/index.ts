@@ -1,3 +1,4 @@
+import { postsCreate } from './posts-create/posts-create'
 import { postImages } from './post-images/post-images'
 import { posts } from './posts/posts'
 import { user } from './users/users'
@@ -5,6 +6,7 @@ import { user } from './users/users'
 import type { Application } from '../declarations'
 
 export const services = (app: Application) => {
+  app.configure(postsCreate)
   app.configure(postImages)
   app.configure(posts)
   app.configure(user)

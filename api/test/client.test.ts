@@ -7,6 +7,9 @@ import authenticationClient from '@feathersjs/authentication-client'
 import { app } from '../src/app'
 import { createClient } from '../src/client'
 import type { UserData } from '../src/client'
+import { mkdtemp, readFile, rm } from 'fs/promises'
+import os from 'os'
+import path from 'path'
 
 const port = app.get('port')
 const appUrl = `http://${app.get('host')}:${port}`
@@ -24,6 +27,35 @@ describe('application client tests', () => {
 
   it('initialized the client', () => {
     assert.ok(client)
+  })
+
+  it('submits a post and image in one request', async () => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), 'post-images-test-'))
+    process.env.POST_IMAGE_DIRECTORY = directory
+    const credentials = { email: `upload-${Date.now()}@example.com`, password: 'supersecret' }
+    const user = await app.service('users').create(credentials)
+    const { accessToken } = await client.authenticate({ strategy: 'local', ...credentials })
+    const form = new FormData()
+    form.set('text', 'Plants')
+    form.set('description', 'Healthy plants')
+    form.set('price', '12.5')
+    form.set('location', 'Ottawa')
+    const png = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 0])
+    form.append('images', new Blob([png], { type: 'image/png' }), 'plant.png')
+    try {
+      const response = await fetch(`${appUrl}/posts-create`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` }, body: form })
+      if (response.status !== 201) assert.fail(`${response.status}: ${await response.text()}`)
+      const result = await response.json() as any
+      assert.strictEqual(result.post.owner_id, user.id)
+      assert.strictEqual(result.images.length, 1)
+      assert.deepStrictEqual(await readFile(path.join(directory, String(result.post.id), result.images[0].filename)), png)
+      await app.service('posts').remove(result.post.id)
+    } finally {
+      delete process.env.POST_IMAGE_DIRECTORY
+      await rm(directory, { recursive: true, force: true })
+      await app.service('users').remove(user.id)
+      await client.logout()
+    }
   })
 
   it('allows only admins to create, patch, and remove users', async () => {

@@ -9,6 +9,7 @@ import { logError } from './hooks/log-error'
 import { sqlite } from './sqlite'
 import { authentication } from './authentication'
 import { services } from './services/index'
+import { postSubmissions } from './post-submissions'
 
 if (!process.env.FEATHERS_SECRET) {
   throw new Error('FEATHERS_SECRET environment variable is required')
@@ -24,6 +25,7 @@ app.use(cors())
 app.use(serveStatic(app.get('public')))
 app.use(errorHandler())
 app.use(parseAuthentication())
+app.configure(postSubmissions)
 app.use(bodyParser())
 
 // Configure services and transports

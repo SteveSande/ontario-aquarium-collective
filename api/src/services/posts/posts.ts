@@ -1,5 +1,7 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.html
 import { authenticate } from '@feathersjs/authentication'
+import { rm } from 'fs/promises'
+import path from 'path'
 
 import { hooks as schemaHooks } from '@feathersjs/schema'
 
@@ -37,7 +39,15 @@ export const posts = (app: Application) => {
       create: [authenticate('jwt')],
       update: [authenticate('jwt')],
       patch: [authenticate('jwt')],
-      remove: [authenticate('jwt')]
+      remove: [authenticate('jwt'), async (context, next) => {
+        await next()
+        const postId = Array.isArray(context.result) ? undefined : (context.result as { id?: number } | undefined)?.id
+        if (postId !== undefined) {
+          await context.app.get('sqliteClient')('post-images').where({ post_id: postId }).del()
+          const root = path.resolve(process.env.POST_IMAGE_DIRECTORY || './uploads/post-images')
+          await rm(path.join(root, String(postId)), { recursive: true, force: true })
+        }
+      }]
     },
     before: {
       all: [schemaHooks.validateQuery(postsQueryValidator), schemaHooks.resolveQuery(postsQueryResolver)],

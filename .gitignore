@@ -1,2 +1,5 @@
 .env
 *.sqlite
+api/uploads/
+.yarn/install-state.gz
+node_modules/
