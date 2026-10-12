@@ -12,6 +12,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "accessible-astro-components": "^5.8.0",
     "astro": "^7.3.8"
   },
   "packageManager": "yarn@4.18.1"

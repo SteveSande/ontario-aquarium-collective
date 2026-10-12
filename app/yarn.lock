@@ -917,6 +917,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"accessible-astro-components@npm:^5.8.0":
+  version: 5.8.0
+  resolution: "accessible-astro-components@npm:5.8.0"
+  peerDependencies:
+    astro: ^5.0.0 || ^6.0.0 || ^7.0.0
+  checksum: 10c0/6f36c9243868966b28e10c91905f29096b045a36ef93d6958124b46869b5e7757def6f20147ef98d7f93ca8137aa4cce5689fb96586c60e4b9cbac2a7fad61f7
+  languageName: node
+  linkType: hard
+
 "am-i-vibing@npm:^0.5.0":
   version: 0.5.0
   resolution: "am-i-vibing@npm:0.5.0"
@@ -942,6 +951,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "app@workspace:."
   dependencies:
+    accessible-astro-components: "npm:^5.8.0"
     astro: "npm:^7.3.8"
   languageName: unknown
   linkType: soft
