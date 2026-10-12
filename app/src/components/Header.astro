@@ -1,8 +1,13 @@
 ---
-
+import styles from "./Header.module.css";
 ---
 
-<header>
-    <a href="/">Home</a>
-    <a href="/about/">About</a>
+<header class={styles.header}>
+    <a class={styles.brand} href="/" aria-label="Ontario Aquarium Collective home">
+        <img class={styles.logo} src="/logo.svg" alt="Ontario Aquarium Collective" />
+    </a>
+    <nav class={styles.nav} aria-label="Primary navigation">
+        <a href="/">Home</a>
+        <a href="/about/">About</a>
+    </nav>
 </header>

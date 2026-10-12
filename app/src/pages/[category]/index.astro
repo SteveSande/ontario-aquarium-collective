@@ -1,0 +1,12 @@
+---
+export function getStaticPaths() {
+    return [
+        { params: { category: "saltwater-livestock" } },
+        { params: { category: "freshwater-livestock" } },
+        { params: { category: "supplies" } },
+        { params: { category: "houseplants" } },
+    ];
+}
+
+const { category } = Astro.params;
+---
