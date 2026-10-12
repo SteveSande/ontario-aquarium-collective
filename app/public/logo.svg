@@ -19,7 +19,7 @@
             <path d="M107 91c-8 2-16 1-24-2" stroke-width="4" />
         </g>
 
-        <g fill="#007934">
+        <g fill="#007934" transform="translate(4.5 13.3) scale(0.9)">
             <ellipse cx="44" cy="122" rx="9" ry="14" transform="rotate(-24 44 122)" />
             <ellipse cx="51" cy="101" rx="8" ry="13" transform="rotate(12 51 101)" />
             <ellipse cx="38" cy="84" rx="8" ry="12" transform="rotate(-30 38 84)" />
@@ -29,7 +29,7 @@
             <path d="M45 133c7-27 9-54 4-82" fill="none" stroke="#007934" stroke-width="5" stroke-linecap="round" />
         </g>
 
-        <text x="60" y="52" fill="#012169" font-family="Nunito, Arial, sans-serif" font-size="23" font-weight="800" letter-spacing="0">OAC</text>
+        <text x="80" y="52" fill="#012169" font-family="Nunito, Arial, sans-serif" font-size="23" font-weight="800" letter-spacing="0" text-anchor="middle">OAC</text>
         <g transform="translate(46 74) scale(0.383)">
             <path d="M42 75c11-15 32-22 51-16 14 4 24 14 29 28-9 16-27 25-47 22-18-2-31-14-33-34Z" fill="#c8102e" />
             <path d="M120 87l18-15v31Z" fill="#c8102e" />
