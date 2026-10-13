@@ -1,7 +1,11 @@
 ---
 import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
 import "../styles/global.css";
 ---
 
 <Header />
-<h1>Hola</h1>
+<main>
+    <slot />
+</main>
+<Footer />
