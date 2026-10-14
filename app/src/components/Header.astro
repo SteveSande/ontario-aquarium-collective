@@ -3,19 +3,15 @@ import styles from "./Header.module.css";
 import NavTile from "./NavTile.astro";
 ---
 
-<header class={styles.header}>
-    <a
-        class={styles.brand}
-        href="/"
-        aria-label="Ontario Aquarium Collective home"
-    >
+<header>
+    <a href="/" ' aria-label="Ontario Aquarium Collective home">
         <img
             class={styles.logo}
             src="/logo.svg"
             alt="Ontario Aquarium Collective"
         />
     </a>
-    <nav class={styles.nav} aria-label="Primary navigation">
+    <nav aria-label="Primary navigation">
         <NavTile title="Home" href="/" />
         <NavTile title="About" href="/about/" />
         <NavTile title="Login" href="/login/" />
