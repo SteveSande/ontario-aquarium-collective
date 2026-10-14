@@ -4,8 +4,20 @@ import Footer from "../components/Footer.astro";
 import "../styles/global.css";
 ---
 
-<Header />
-<main>
-    <slot />
-</main>
-<Footer />
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <title>Ontario Aquarium Collective</title>
+    </head>
+    <body>
+        <Header />
+        <main>
+            <slot />
+        </main>
+        <Footer />
+    </body>
+</html>

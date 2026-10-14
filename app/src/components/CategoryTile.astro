@@ -1,0 +1,19 @@
+---
+import styles from "./CategoryTile.module.css";
+
+interface Props {
+    label: string;
+    emojis: string;
+    href: string;
+}
+
+const { label, emojis, href } = Astro.props;
+---
+
+<li class={styles.categoryTile}>
+    <a class={styles.categoryLink} href={href}>
+        {label}
+        <br />
+        <span class={styles.emojis}>{emojis}</span>
+    </a>
+</li>
