@@ -1,5 +1,6 @@
 ---
 import styles from "./Header.module.css";
+import NavTile from "./NavTile.astro";
 ---
 
 <header class={styles.header}>
@@ -15,8 +16,8 @@ import styles from "./Header.module.css";
         />
     </a>
     <nav class={styles.nav} aria-label="Primary navigation">
-        <a href="/">Home</a>
-        <a href="/about/">About</a>
-        <a href="/login/">Login</a>
+        <NavTile title="Home" href="/" />
+        <NavTile title="About" href="/about/" />
+        <NavTile title="Login" href="/login/" />
     </nav>
 </header>

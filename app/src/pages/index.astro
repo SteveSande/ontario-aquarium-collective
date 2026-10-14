@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import styles from "./index.module.css";
 ---
 
 <html lang="en">
@@ -15,7 +16,7 @@ import Layout from "../layouts/Layout.astro";
         <Layout>
             <h1>Ontario Aquarium Collective</h1>
             <nav>
-                <ul>
+                <ul class={styles.navList}>
                     <li>
                         <a href="/saltwater-livestock">Saltwater Livestock</a>
                     </li>

@@ -1,0 +1,28 @@
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.navList {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+.navList li {
+    text-align: center;
+    border: 2px var(--ont-blue) solid;
+    border-radius: 10px;
+}
+
+.navList a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    padding: 20px;
+    display: block;
+}
