@@ -1,12 +1,12 @@
 ---
 export function getStaticPaths() {
     return [
-        { params: { category: "1" } },
-        { params: { category: "2" } },
-        { params: { category: "3" } },
-        { params: { category: "4" } },
+        { params: { listing: "1" } },
+        { params: { listing: "2" } },
+        { params: { listing: "3" } },
+        { params: { listing: "4" } },
     ];
 }
 
-const { category } = Astro.params;
+const { listing } = Astro.params;
 ---

@@ -1,17 +1,14 @@
 ---
 import styles from "./Header.module.css";
 import NavTile from "./NavTile.astro";
+import Logo from "../assets/logo.svg";
 ---
 
 <header>
-    <a href="/" ' aria-label="Ontario Aquarium Collective home">
-        <img
-            class={styles.logo}
-            src="/logo.svg"
-            alt="Ontario Aquarium Collective"
-        />
+    <a href="/" aria-label="Ontario Aquarium Collective home">
+        <Logo width="100" height="100" />
     </a>
-    <nav aria-label="Primary navigation">
+    <nav class={styles.nav} aria-label="Primary navigation">
         <NavTile label="Home" href="/" />
         <NavTile label="About" href="/about/" />
         <NavTile label="Login" href="/login/" />

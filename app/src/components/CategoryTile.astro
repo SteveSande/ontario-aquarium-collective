@@ -10,7 +10,7 @@ interface Props {
 const { label, emojis, href } = Astro.props;
 ---
 
-<li class={styles.categoryTile}>
+<li class:list={["box", styles.categoryTile]}>
     <a class={styles.categoryLink} href={href}>
         {label}
         <br />

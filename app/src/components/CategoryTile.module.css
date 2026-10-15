@@ -1,7 +1,5 @@
 .categoryTile {
     text-align: center;
-    border: 2px var(--ont-blue) solid;
-    border-radius: 10px;
 }
 
 .categoryLink {

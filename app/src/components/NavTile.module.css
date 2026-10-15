@@ -1,0 +1,13 @@
+.navLink {
+    border-radius: 999px;
+    color: var(--ont-blue);
+    padding: 0.625rem 0.875rem;
+    text-decoration: none;
+}
+
+.navLink:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--ont-yellow);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 5px;
+}

@@ -1,4 +1,6 @@
 ---
+import styles from "./NavTile.module.css";
+
 interface Props {
     label: string;
     href: string;
@@ -7,4 +9,4 @@ interface Props {
 const { label, href } = Astro.props;
 ---
 
-<a href={href}>{label}</a>
+<a class={styles.navLink} href={href}>{label}</a>
