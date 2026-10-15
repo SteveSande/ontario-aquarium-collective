@@ -5,13 +5,13 @@
     --ont-blue: #012169;
     --ont-yellow: #f3cc00;
     --ont-green: #007934;
-    --white: #ffffff;
 
     font-family: "Nunito", sans-serif;
 }
 
 html {
     font-size: 100%;
+    background-color: #f7f8fc;
 }
 
 body {
@@ -69,7 +69,8 @@ li {
 
 .box {
     border: 1px solid var(--ont-blue);
-    border-radius: 5px;
+    border-radius: 10px;
+    background-color: white;
 }
 
 .box:hover {
