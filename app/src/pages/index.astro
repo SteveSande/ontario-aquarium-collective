@@ -4,20 +4,27 @@ import styles from "./index.module.css";
 import CategoryTile from "../components/CategoryTile.astro";
 ---
 
-<Layout>
-    <h1>Ontario Aquarium Collective</h1>
+<Layout h1="Ontario Aquarium Collective">
     <ul class={styles.categoryList}>
         <CategoryTile
             label="Saltwater Livestock"
             emojis="🪸🐡"
-            href="/saltwater-livestock"
+            href="/listings?category=saltwater"
         />
         <CategoryTile
             label="Freshwater Livestock"
             emojis="🌿🐟"
-            href="/freshwater-livestock"
+            href="/listings?category=freshwater"
         />
-        <CategoryTile label="Supplies" emojis="📦" href="/supplies" />
-        <CategoryTile label="Houseplants" emojis="🪴" href="/houseplants" />
+        <CategoryTile
+            label="Supplies"
+            emojis="📦"
+            href="/listings?category=supplies"
+        />
+        <CategoryTile
+            label="Houseplants"
+            emojis="🪴"
+            href="/listings?category=houseplants"
+        />
     </ul>
 </Layout>

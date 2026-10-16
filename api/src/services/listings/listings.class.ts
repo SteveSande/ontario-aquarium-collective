@@ -4,24 +4,24 @@ import { KnexService } from '@feathersjs/knex'
 import type { KnexAdapterParams, KnexAdapterOptions } from '@feathersjs/knex'
 
 import type { Application } from '../../declarations'
-import type { Posts, PostsData, PostsPatch, PostsQuery } from './posts.schema'
+import type { Listings, ListingsData, ListingsPatch, ListingsQuery } from './listings.schema'
 
-export type { Posts, PostsData, PostsPatch, PostsQuery }
+export type { Listings, ListingsData, ListingsPatch, ListingsQuery }
 
-export interface PostsParams extends KnexAdapterParams<PostsQuery> {}
+export interface ListingsParams extends KnexAdapterParams<ListingsQuery> {}
 
 // By default calls the standard Knex adapter service methods but can be customized with your own functionality.
-export class PostsService<ServiceParams extends Params = PostsParams> extends KnexService<
-  Posts,
-  PostsData,
-  PostsParams,
-  PostsPatch
+export class ListingsService<ServiceParams extends Params = ListingsParams> extends KnexService<
+  Listings,
+  ListingsData,
+  ListingsParams,
+  ListingsPatch
 > {}
 
 export const getOptions = (app: Application): KnexAdapterOptions => {
   return {
     paginate: app.get('paginate'),
     Model: app.get('sqliteClient'),
-    name: 'posts'
+    name: 'listings'
   }
 }

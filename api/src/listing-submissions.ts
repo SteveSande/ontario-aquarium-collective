@@ -3,11 +3,11 @@ import { BadRequest } from '@feathersjs/errors'
 import { bodyParser } from '@feathersjs/koa'
 import type { Application } from './declarations'
 
-// Parse multipart uploads before the REST transport dispatches to posts-create.
-export const postSubmissions = (app: Application) => {
+// Parse multipart uploads before the REST transport dispatches to listing-submission.
+export const listingSubmissions = (app: Application) => {
   const parseMultipart = bodyParser({ multipart: true, formidable: { maxFiles: 6, maxFileSize: 10 * 1024 * 1024, maxTotalFileSize: 60 * 1024 * 1024 } })
   app.use(async (ctx: any, next: () => Promise<unknown>) => {
-    if (ctx.path !== '/posts-create' || ctx.method !== 'POST') return next()
+    if (ctx.path !== '/listing-submission' || ctx.method !== 'POST') return next()
     await parseMultipart(ctx, async () => undefined)
     const uploads = ctx.request.files as Record<string, any> | undefined
     const files = uploads?.images === undefined ? [] : [uploads.images].flat()

@@ -4,24 +4,24 @@ import { KnexService } from '@feathersjs/knex'
 import type { KnexAdapterParams, KnexAdapterOptions } from '@feathersjs/knex'
 
 import type { Application } from '../../declarations'
-import type { PostImages, PostImagesData, PostImagesPatch, PostImagesQuery } from './post-images.schema'
+import type { ListingImages, ListingImagesData, ListingImagesPatch, ListingImagesQuery } from './listing-images.schema'
 
-export type { PostImages, PostImagesData, PostImagesPatch, PostImagesQuery }
+export type { ListingImages, ListingImagesData, ListingImagesPatch, ListingImagesQuery }
 
-export interface PostImagesParams extends KnexAdapterParams<PostImagesQuery> {}
+export interface ListingImagesParams extends KnexAdapterParams<ListingImagesQuery> {}
 
 // By default calls the standard Knex adapter service methods but can be customized with your own functionality.
-export class PostImagesService<ServiceParams extends Params = PostImagesParams> extends KnexService<
-  PostImages,
-  PostImagesData,
-  PostImagesParams,
-  PostImagesPatch
+export class ListingImagesService<ServiceParams extends Params = ListingImagesParams> extends KnexService<
+  ListingImages,
+  ListingImagesData,
+  ListingImagesParams,
+  ListingImagesPatch
 > {}
 
 export const getOptions = (app: Application): KnexAdapterOptions => {
   return {
     paginate: app.get('paginate'),
     Model: app.get('sqliteClient'),
-    name: 'post-images'
+    name: 'listing-images'
   }
 }

@@ -29,9 +29,9 @@ describe('application client tests', () => {
     assert.ok(client)
   })
 
-  it('submits a post and image in one request', async () => {
-    const directory = await mkdtemp(path.join(os.tmpdir(), 'post-images-test-'))
-    process.env.POST_IMAGE_DIRECTORY = directory
+  it('submits a listing and image in one request', async () => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), 'listing-images-test-'))
+    process.env.LISTING_IMAGE_DIRECTORY = directory
     const credentials = { email: `upload-${Date.now()}@example.com`, password: 'supersecret' }
     const user = await app.service('users').create(credentials)
     const { accessToken } = await client.authenticate({ strategy: 'local', ...credentials })
@@ -43,15 +43,15 @@ describe('application client tests', () => {
     const png = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 0])
     form.append('images', new Blob([png], { type: 'image/png' }), 'plant.png')
     try {
-      const response = await fetch(`${appUrl}/posts-create`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` }, body: form })
+      const response = await fetch(`${appUrl}/listing-submission`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` }, body: form })
       if (response.status !== 201) assert.fail(`${response.status}: ${await response.text()}`)
       const result = await response.json() as any
-      assert.strictEqual(result.post.owner_id, user.id)
+      assert.strictEqual(result.listing.owner_id, user.id)
       assert.strictEqual(result.images.length, 1)
-      assert.deepStrictEqual(await readFile(path.join(directory, String(result.post.id), result.images[0].filename)), png)
-      await app.service('posts').remove(result.post.id)
+      assert.deepStrictEqual(await readFile(path.join(directory, String(result.listing.id), result.images[0].filename)), png)
+      await app.service('listings').remove(result.listing.id)
     } finally {
-      delete process.env.POST_IMAGE_DIRECTORY
+      delete process.env.LISTING_IMAGE_DIRECTORY
       await rm(directory, { recursive: true, force: true })
       await app.service('users').remove(user.id)
       await client.logout()
@@ -105,12 +105,12 @@ describe('application client tests', () => {
     await app.service('users').remove(admin.id)
   })
 
-  it('allows public post reads and limits writes to owners or admins', async () => {
+  it('allows public listing reads and limits writes to owners or admins', async () => {
     const suffix = `${Date.now()}-${Math.random().toString(36).slice(2)}`
     const password = 'supersecret'
     const ownerData = { email: `owner-${suffix}@example.com`, password }
     const otherData = { email: `other-${suffix}@example.com`, password }
-    const adminData = { email: `post-admin-${suffix}@example.com`, password }
+    const adminData = { email: `listing-admin-${suffix}@example.com`, password }
     const owner = await app.service('users').create(ownerData)
     const other = await app.service('users').create(otherData)
     const admin = await app.service('users').create(adminData)
@@ -123,32 +123,32 @@ describe('application client tests', () => {
     await otherClient.authenticate({ strategy: 'local', ...otherData })
     await adminClient.authenticate({ strategy: 'local', ...adminData })
 
-    await assert.rejects(client.service('posts').create({ text: 'anonymous' } as any), { code: 401 })
-    const postData = { text: 'public post', description: 'Healthy aquarium plants', price: 12.5, location: 'Centretown, Ottawa' }
-    const post = await ownerClient.service('posts').create({ ...postData, owner_id: other.id })
-    assert.strictEqual(post.owner_id, owner.id, 'The signed-in user owns the post')
-    assert.strictEqual(post.location, 'Centretown, Ottawa')
-    assert.strictEqual((await client.service('posts').get(post.id)).text, 'public post')
-    assert.strictEqual((await client.service('posts').find({ query: { id: post.id } })).total, 1)
+    await assert.rejects(client.service('listings').create({ text: 'anonymous' } as any), { code: 401 })
+    const listingData = { text: 'public listing', description: 'Healthy aquarium plants', price: 12.5, location: 'Centretown, Ottawa' }
+    const listing = await ownerClient.service('listings').create({ ...listingData, owner_id: other.id })
+    assert.strictEqual(listing.owner_id, owner.id, 'The signed-in user owns the listing')
+    assert.strictEqual(listing.location, 'Centretown, Ottawa')
+    assert.strictEqual((await client.service('listings').get(listing.id)).text, 'public listing')
+    assert.strictEqual((await client.service('listings').find({ query: { id: listing.id } })).total, 1)
 
-    await assert.rejects(client.service('posts').patch(post.id, { text: 'anonymous edit' }), { code: 401 })
-    await assert.rejects(client.service('posts').remove(post.id), { code: 401 })
-    await assert.rejects(otherClient.service('posts').patch(post.id, { text: 'changed' }), { code: 404 })
-    await assert.rejects(otherClient.service('posts').remove(post.id), { code: 404 })
-    await assert.rejects(otherClient.service('posts').patch(post.id, { text: 'changed' }, { query: { owner_id: owner.id } }), { code: 404 })
-    await assert.rejects(ownerClient.service('posts').patch(post.id, { owner_id: other.id } as any), { code: 400 })
-    await assert.rejects(ownerClient.service('posts').patch(post.id, { location: '   ' }), { code: 400 })
-    await assert.rejects(ownerClient.service('posts').create({ ...postData, location: '' }), { code: 400 })
-    await assert.rejects(ownerClient.service('posts').create({ ...postData, location: 'x'.repeat(21) }), { code: 400 })
-    await assert.rejects(ownerClient.service('posts').create({ text: postData.text, description: postData.description, price: postData.price } as any), { code: 400 })
-    assert.strictEqual((await ownerClient.service('posts').patch(post.id, { text: 'owner edit' })).text, 'owner edit')
-    assert.strictEqual((await ownerClient.service('posts').patch(post.id, { location: 'M5V 2T6' })).location, 'M5V 2T6')
-    assert.strictEqual((await ownerClient.service('posts').patch(post.id, { location: 'Toronto' })).location, 'Toronto')
-    assert.strictEqual((await adminClient.service('posts').patch(post.id, { text: 'admin edit' })).text, 'admin edit')
-    await adminClient.service('posts').remove(post.id)
-    const ownedPost = await ownerClient.service('posts').create({ ...postData, text: 'owner removable' })
-    assert.strictEqual(ownedPost.owner_id, owner.id)
-    await ownerClient.service('posts').remove(ownedPost.id)
+    await assert.rejects(client.service('listings').patch(listing.id, { text: 'anonymous edit' }), { code: 401 })
+    await assert.rejects(client.service('listings').remove(listing.id), { code: 401 })
+    await assert.rejects(otherClient.service('listings').patch(listing.id, { text: 'changed' }), { code: 404 })
+    await assert.rejects(otherClient.service('listings').remove(listing.id), { code: 404 })
+    await assert.rejects(otherClient.service('listings').patch(listing.id, { text: 'changed' }, { query: { owner_id: owner.id } }), { code: 404 })
+    await assert.rejects(ownerClient.service('listings').patch(listing.id, { owner_id: other.id } as any), { code: 400 })
+    await assert.rejects(ownerClient.service('listings').patch(listing.id, { location: '   ' }), { code: 400 })
+    await assert.rejects(ownerClient.service('listings').create({ ...listingData, location: '' }), { code: 400 })
+    await assert.rejects(ownerClient.service('listings').create({ ...listingData, location: 'x'.repeat(21) }), { code: 400 })
+    await assert.rejects(ownerClient.service('listings').create({ text: listingData.text, description: listingData.description, price: listingData.price } as any), { code: 400 })
+    assert.strictEqual((await ownerClient.service('listings').patch(listing.id, { text: 'owner edit' })).text, 'owner edit')
+    assert.strictEqual((await ownerClient.service('listings').patch(listing.id, { location: 'M5V 2T6' })).location, 'M5V 2T6')
+    assert.strictEqual((await ownerClient.service('listings').patch(listing.id, { location: 'Toronto' })).location, 'Toronto')
+    assert.strictEqual((await adminClient.service('listings').patch(listing.id, { text: 'admin edit' })).text, 'admin edit')
+    await adminClient.service('listings').remove(listing.id)
+    const ownedListing = await ownerClient.service('listings').create({ ...listingData, text: 'owner removable' })
+    assert.strictEqual(ownedListing.owner_id, owner.id)
+    await ownerClient.service('listings').remove(ownedListing.id)
 
     await app.service('users').remove(owner.id)
     await app.service('users').remove(other.id)

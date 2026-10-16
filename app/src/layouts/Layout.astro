@@ -2,6 +2,12 @@
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import "../styles/global.css";
+
+interface Props {
+    h1: string;
+}
+
+const { h1 } = Astro.props;
 ---
 
 <html lang="en">
@@ -16,6 +22,7 @@ import "../styles/global.css";
     <body>
         <Header />
         <main>
+            <h1>{h1}</h1>
             <slot />
         </main>
         <Footer />

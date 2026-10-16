@@ -4,19 +4,19 @@ import type { TransportConnection, Application } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
 
-import { postsCreateClient } from './services/posts-create/posts-create.shared'
-export type { PostsCreate, PostsCreateData } from './services/posts-create/posts-create.shared'
+import { listingSubmissionClient } from './services/listing-submission/listing-submission.shared'
+export type { ListingSubmission, ListingSubmissionData } from './services/listing-submission/listing-submission.shared'
 
-import { postImagesClient } from './services/post-images/post-images.shared'
+import { listingImagesClient } from './services/listing-images/listing-images.shared'
 export type {
-  PostImages,
-  PostImagesData,
-  PostImagesQuery,
-  PostImagesPatch
-} from './services/post-images/post-images.shared'
+  ListingImages,
+  ListingImagesData,
+  ListingImagesQuery,
+  ListingImagesPatch
+} from './services/listing-images/listing-images.shared'
 
-import { postsClient } from './services/posts/posts.shared'
-export type { Posts, PostsData, PostsQuery, PostsPatch } from './services/posts/posts.shared'
+import { listingsClient } from './services/listings/listings.shared'
+export type { Listings, ListingsData, ListingsQuery, ListingsPatch } from './services/listings/listings.shared'
 
 import { userClient } from './services/users/users.shared'
 export type { User, UserData, UserQuery, UserPatch } from './services/users/users.shared'
@@ -48,8 +48,8 @@ export const createClient = <Configuration = any,>(
   client.set('connection', connection)
 
   client.configure(userClient)
-  client.configure(postsClient)
-  client.configure(postImagesClient)
-  client.configure(postsCreateClient)
+  client.configure(listingsClient)
+  client.configure(listingImagesClient)
+  client.configure(listingSubmissionClient)
   return client
 }

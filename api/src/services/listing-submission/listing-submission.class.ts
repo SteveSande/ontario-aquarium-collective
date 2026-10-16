@@ -4,12 +4,12 @@ import path from 'path'
 import { BadRequest, NotAuthenticated } from '@feathersjs/errors'
 import type { Params } from '@feathersjs/feathers'
 import type { Application } from '../../declarations'
-import type { PostsCreate, PostsCreateData } from './posts-create.schema'
+import type { ListingSubmission, ListingSubmissionData } from './listing-submission.schema'
 
-export type { PostsCreate, PostsCreateData }
+export type { ListingSubmission, ListingSubmissionData }
 
 export interface UploadedImage { filepath: string }
-export interface PostsCreateParams extends Params {
+export interface ListingSubmissionParams extends Params {
   uploadedImages?: UploadedImage[]
 }
 
@@ -21,10 +21,10 @@ function imageType(bytes: Buffer): { mime: string; extension: string } | undefin
   if (bytes.toString('ascii', 0, 4) === 'RIFF' && bytes.toString('ascii', 8, 12) === 'WEBP') return { mime: 'image/webp', extension: 'webp' }
 }
 
-export class PostsCreateService {
+export class ListingSubmissionService {
   constructor(private app: Application) {}
 
-  async create(data: PostsCreateData, params?: PostsCreateParams): Promise<PostsCreate> {
+  async create(data: ListingSubmissionData, params?: ListingSubmissionParams): Promise<ListingSubmission> {
     const user = params?.user
     if (!user) throw new NotAuthenticated()
     const files = params?.uploadedImages ?? []
@@ -37,14 +37,14 @@ export class PostsCreateService {
       return { file, type, size: bytes.length }
     }))
 
-    const root = path.resolve(process.env.POST_IMAGE_DIRECTORY || './uploads/post-images')
+    const root = path.resolve(process.env.LISTING_IMAGE_DIRECTORY || './uploads/listing-images')
     const writtenFiles: string[] = []
     try {
       return await this.app.get('sqliteClient').transaction(async trx => {
         const serviceParams = { user, transaction: { trx, starting: false } }
-        const post = await this.app.service('posts').create(data, serviceParams)
-        const postId = post.id
-        const directory = path.join(root, String(postId))
+        const listing = await this.app.service('listings').create(data, serviceParams)
+        const listingId = listing.id
+        const directory = path.join(root, String(listingId))
         await mkdir(directory, { recursive: true })
         const images = []
         for (const [position, image] of checked.entries()) {
@@ -52,10 +52,10 @@ export class PostsCreateService {
           const destination = path.join(directory, filename)
           await rename(image.file.filepath, destination)
           writtenFiles.push(destination)
-          const row = await this.app.service('post-images').create({ post_id: postId, filename, position, mime_type: image.type.mime, size_bytes: image.size }, serviceParams)
-          images.push({ ...row, url: `/post-images/${postId}/${filename}` })
+          const row = await this.app.service('listing-images').create({ listing_id: listingId, filename, position, mime_type: image.type.mime, size_bytes: image.size }, serviceParams)
+          images.push({ ...row, url: `/listing-images/${listingId}/${filename}` })
         }
-        return { post, images }
+        return { listing, images }
       })
     } catch (error) {
       await Promise.all(writtenFiles.map(file => rm(file, { force: true })))
