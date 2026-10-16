@@ -1,0 +1,18 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { Form, Input, Button } from "accessible-astro-components";
+import { API_URL } from "astro:env/server";
+---
+
+<Layout h1="Login">
+    <Form action={API_URL + "/login"} method="post">
+        <Input
+            name="email"
+            label="Email address"
+            type="email"
+            required
+            data-validation="Please provide a valid email address"
+        />
+        <Button type="submit">Submit form</Button>
+    </Form>
+</Layout>
